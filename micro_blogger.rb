@@ -31,6 +31,7 @@ class MicroBlogger
          when 't' then tweet(parts[1..-1].join(" "))
          when "dm" then dm(parts[1], parts[2..-1].join(" "))
          when "spam" then spam_my_followers(parts[1..-1].join(" "))
+         when "elt" then everyones_last_tweet
          else
            puts "Sorry, I don't know how to #{command}"
       end
@@ -63,6 +64,15 @@ class MicroBlogger
   def spam_my_followers(message)
   	list = followers_list
   	list.each{ |follower| dm(follower, message)}
+  end
+
+  def everyones_last_tweet
+  	friends = @client.friends.sort_by { |friend| friend.screen_name.downcase }
+  	friends.each do |friend|
+  	  timestamp = friend.status.created_at
+  	  puts "#{friend.screen_name} said: #{friend.status.text} at: #{timestamp.strftime("%A, %b %d")}"
+  	  puts ""
+  	end
   end
 
 
