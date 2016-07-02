@@ -28,12 +28,41 @@ class MicroBlogger
       command = parts[0]
       case command
          when 'q' then puts "Goodbye!"
-         when 't' then self.tweet(parts[1..-1].join(" "))
+         when 't' then tweet(parts[1..-1].join(" "))
+         when "dm" then dm(parts[1], parts[2..-1].join(" "))
+         when "spam" then spam_my_followers(parts[1..-1].join(" "))
          else
            puts "Sorry, I don't know how to #{command}"
       end
     end
 
+  end
+
+  def dm(target, message)
+
+  	screen_names = @client.followers.collect { |follower| @client.user(follower).screen_name }
+  	puts "Trying to send #{target} this direct message: "
+  	puts message
+  	message = "d @#{target} #{message}"
+  	if screen_names.include?(target)
+  	  tweet(message)
+  	else
+  	  puts "The target is not a follower! Cannot DM"
+  	end
+
+  end
+
+  def followers_list
+  	
+  	screen_names = []
+  	@client.followers.each { |follower| screen_names << @client.user(follower).screen_name }
+  	screen_names
+
+  end
+
+  def spam_my_followers(message)
+  	list = followers_list
+  	list.each{ |follower| dm(follower, message)}
   end
 
 
